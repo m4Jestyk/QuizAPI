@@ -5,10 +5,10 @@ import com.example.demo.model.Question;
 import com.example.demo.model.QuestionWrapper;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.QuizRepository;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.example.demo.model.Quiz;
+import com.example.demo.model.Response;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,5 +49,24 @@ public class QuizService {
         }
 
         return ResponseEntity.ok().body(questions);
+    }
+
+    public ResponseEntity<Integer> calcResult(Integer id, List<Response> responses) {
+        Quiz quiz = quizRepository.findById(id).get();
+        List<Question> questions = quiz.getQuestions();
+
+        int score = 0;
+        for(Response r : responses){
+            Integer qId = r.getId();
+            String res = r.getResponse();
+
+            Question q = questionRepository.findById(qId).get();
+            String rightAnswer = q.getRightAnswer();
+
+            if(rightAnswer.equals(res)){
+                score++;
+            }
+        }
+        return ResponseEntity.ok().body(score);
     }
 }
